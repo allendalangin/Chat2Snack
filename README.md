@@ -13,7 +13,7 @@ Follow these steps to get the project running on your local machine.
 Prerequisites
 Python 3.8+
 
-Git and Git LFS installed.
+Git installed
 
 C++ build tools (On Windows, install Visual Studio Build Tools with the "Desktop development with C++" workload).
 
@@ -26,7 +26,7 @@ cd Chat2Snack
 2. Install Dependencies
 This project's required Python libraries are listed in requirements.txt. Install them using pip:
 
-pip install -r requirements.txt
+pip install pyserial llama-cpp-python huggingface-hub
 
 3. Log in to Hugging Face (One-Time Setup)
 The AI mode requires downloading the fine-tuned model from a private Hugging Face repository. You only need to log in once on your machine.
