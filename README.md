@@ -42,7 +42,7 @@ Paste your token when prompted and press Enter. Your credentials will be securel
 🚀 Running the Application
 Once the setup is complete, you can run the main controller script from your terminal:
 
-python order_controller.py
+python chat2snack_controller.py
 
 You will be presented with a startup menu to choose your desired mode.
 
