@@ -1,0 +1,33 @@
+/*
+ * Module: Chat2SnackManager
+ * --------------------------------
+ * Top-level module to test a SINGLE servo with a SINGLE button.
+ * Pressing the button moves the servo to 90 degrees and turns on an LED.
+ * Releasing it moves it back to 0 degrees and turns off the LED.
+ */
+module Chat2SnackManager (
+    input wire clk,      // 50MHz Clock
+    input wire rst_n,    // Reset button (active-low)
+
+    // --- Input from 1 physical button ---
+    input wire btn_test,
+
+    // --- Output to 1 servo ---
+    output wire servo_out,
+    
+    // --- Output to 1 LED ---
+    output wire led_out  // <-- ADDED
+);
+
+    // Instantiate a single simple servo controller
+    pwm_servo_simple s1 (
+        .clk(clk),
+        .rst_n(rst_n),
+        .position_select(btn_test), // Connect the button to the controller
+        .servo_out(servo_out)       // Connect the controller to the output pin
+    );
+
+    // Light up the LED when the button is pressed
+    assign led_out = btn_test; // <-- ADDED
+
+endmodule
