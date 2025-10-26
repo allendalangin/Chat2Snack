@@ -26,7 +26,7 @@ cd Chat2Snack
 2. Install Dependencies
 This project's required Python libraries are listed in requirements.txt. Install them using pip:
 
-pip install pyserial llama-cpp-python huggingface-hub
+pip install streamlit pyserial llama-cpp-python huggingface-hub
 
 3. Log in to Hugging Face (One-Time Setup)
 The AI mode requires downloading the fine-tuned model from a private Hugging Face repository. You only need to log in once on your machine.
@@ -39,12 +39,13 @@ huggingface-cli login
 
 Paste your token when prompted and press Enter. Your credentials will be securely saved for future use.
 
-🚀 Running the Application
-Once the setup is complete, you can run the main controller script from your terminal:
+🚀 Running the Application Once the setup is complete and the model file is in place, you can run the Streamlit app.
+In your terminal, from the Chat2Snack directory, run:
 
-python chat2snack_controller.py
+streamlit run app.py
 
-You will be presented with a startup menu to choose your desired mode.
+This will start a local web server and automatically open the application in your default web browser.
+You can also access the app from other devices (like your phone) on the same Wi-Fi network by using the "Network URL" (e.g., http://192.168.1.10:8501) that appears in your terminal.
 
 ⚠️ Important Notice: Model Download
 On the first run of the AI Mode, the application will download the qwen2-7b-chat-merged-q4_k_m.gguf model file from Hugging Face.
