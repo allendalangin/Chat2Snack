@@ -199,7 +199,7 @@ st.title("🍔 Chat2Snack: LLM Food Dispenser")
 # Display menu image
 st.subheader("📋 Menu")
 # --- FIX: Added '//' to the URL ---
-menu_image_url = r"C:\Users\rafaello\workspace\Chat2Snack\images\Menu.png"
+menu_image_url = r"images\Menu.png"
 # Updated to fix deprecation warning
 st.image(menu_image_url, caption="Menu: Ice Cream, Fries, Soda, Pizza, Burger", width='stretch') 
 
