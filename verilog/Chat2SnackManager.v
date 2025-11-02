@@ -7,6 +7,7 @@
  * Byte 2: data[15:8]
  *
  * It triggers the dispensers when the 'GO' bit (bit 15) is received.
+ * It always latches the most recent command to 'command_reg' for debugging.
  */
 module Chat2SnackManager (
     input wire clk,       // 50MHz Clock
@@ -27,7 +28,10 @@ module Chat2SnackManager (
     output wire led_out_fries,
     output wire led_out_soda,
     output wire led_out_ice_cream,
-    output wire led_out_pizza
+    output wire led_out_pizza,
+
+    // --- Debug Output ---
+    output wire [15:0] debug_command_out
 );
 
     // --- Instantiate the UART Receiver ---
@@ -39,13 +43,13 @@ module Chat2SnackManager (
         .rst_n(rst_n),
         .rx_pin(uart_rx_pin),
         .data_out(rx_data),
-        .data_ready(rx_data_ready)
+        .data_ready_pulse(rx_data_ready) // Make sure this port name matches UART_RX.v
     );
 
     // --- Packet Assembly FSM ---
     localparam S_WAIT_BYTE_1 = 0;
     localparam S_WAIT_BYTE_2 = 1;
-
+    
     reg       state;
     reg [7:0] byte_1_reg;
     reg [15:0] command_reg; // Holds the last valid command
@@ -56,9 +60,10 @@ module Chat2SnackManager (
             state <= S_WAIT_BYTE_1;
             byte_1_reg <= 0;
             start_trigger <= 0;
+            command_reg <= 16'h0000; // Clear debug LEDs on reset
         end else begin
             // Default: trigger is low
-            start_trigger <= 0; 
+            start_trigger <= 0;
             
             if (rx_data_ready) begin
                 case (state)
@@ -70,13 +75,20 @@ module Chat2SnackManager (
                     S_WAIT_BYTE_2: begin
                         // This is the high byte. Assemble the full command.
                         reg [15:0] new_command;
-                        new_command = {rx_data, byte_1_reg};
+                        new_command = {rx_data, byte_1_reg}; 
                         
-                        // Check the 'GO' bit (bit 15)
+                        // --- Logic Fix ---
+                        
+                        // 1. Always latch the new command, even if it's
+                        //    just a "clear" command. This updates the debug LEDs.
+                        command_reg <= new_command; 
+                        
+                        // 2. Only pulse the trigger if the 'GO' bit is set.
                         if (new_command[15]) begin
-                            command_reg <= new_command; // Latch the command
                             start_trigger <= 1; // Pulse the trigger
                         end
+                        
+                        // --- End of Fix ---
                         
                         state <= S_WAIT_BYTE_1; // Ready for next packet
                     end
@@ -91,8 +103,8 @@ module Chat2SnackManager (
     wire [2:0] soda_amount      = command_reg[8:6];
     wire [2:0] fries_amount     = command_reg[5:3];
     wire [2:0] burger_amount    = command_reg[2:0];
-    
-    // --- System Busy Logic (Same as before) ---
+
+    // --- System Busy Logic ---
     reg system_busy;
     wire busy_burger, busy_fries, busy_soda, busy_ice_cream, busy_pizza;
     
@@ -114,7 +126,6 @@ module Chat2SnackManager (
     wire servo_pos_burger, servo_pos_fries, servo_pos_soda, servo_pos_ice_cream, servo_pos_pizza;
 
     // --- Instantiate 5 Dispense Controllers (Parallel) ---
-    // These are identical to the previous version
     DispenseController dc_burger (
         .clk(clk), .rst_n(rst_n),
         .start_dispense(final_start_trigger),
@@ -123,7 +134,7 @@ module Chat2SnackManager (
         .led_out(led_out_burger),
         .busy(busy_burger)
     );
-
+    
     DispenseController dc_fries (
         .clk(clk), .rst_n(rst_n),
         .start_dispense(final_start_trigger),
@@ -141,7 +152,7 @@ module Chat2SnackManager (
         .led_out(led_out_soda),
         .busy(busy_soda)
     );
-
+    
     DispenseController dc_ice_cream (
         .clk(clk), .rst_n(rst_n),
         .start_dispense(final_start_trigger),
@@ -161,7 +172,6 @@ module Chat2SnackManager (
     );
 
     // --- Instantiate 5 PWM Servo Drivers (Parallel) ---
-    // These are identical to the previous version
     pwm_servo_simple pwm_burger (
         .clk(clk), .rst_n(rst_n),
         .position_select(servo_pos_burger),
@@ -191,5 +201,10 @@ module Chat2SnackManager (
         .position_select(servo_pos_pizza),
         .servo_out(servo_out_pizza)
     );
-    
+
+    // --- Debug Wire Assignment ---
+    // This continuously assigns the value of the internal
+    // 'command_reg' to the new 16-bit output port.
+    assign debug_command_out = command_reg;
+
 endmodule

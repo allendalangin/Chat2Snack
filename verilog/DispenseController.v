@@ -23,7 +23,7 @@ module DispenseController (
     parameter CLK_FREQ = 50_000_000;
     // 0.5 seconds for each state
     localparam STATE_CLOCKS = CLK_FREQ / 2;
-
+    
     // --- FSM States ---
     localparam S_IDLE   = 3'd0;
     localparam S_PUSH   = 3'd1;
@@ -34,7 +34,10 @@ module DispenseController (
     
     // --- Counters ---
     reg [31:0] timer_cnt;
-    reg [2:0]  dispense_counter; // Internal counter for remaining dispenses
+    reg [2:0]  dispense_counter;
+    
+    // --- FIX: Added 'next' register for the counter ---
+    reg [2:0]  dispense_counter_next; 
     
     // --- Timer Logic ---
     reg  timer_enable;
@@ -67,6 +70,9 @@ module DispenseController (
         servo_pos_select = 0; // Default to 0 degrees
         led_out          = 0; // Default LED off
         busy             = 1'b0; // Default not busy
+        
+        // --- FIX: Default assignment for the counter ---
+        dispense_counter_next = dispense_counter; 
 
         case (state)
             S_IDLE: begin
@@ -76,10 +82,11 @@ module DispenseController (
                 
                 if (start_dispense & (dispense_count_in > 0)) begin
                     next_state = S_PUSH;
-                    // Latch the count and immediately start
-                    dispense_counter = dispense_count_in; 
+                    // --- FIX: Assign to 'next' register ---
+                    dispense_counter_next = dispense_count_in; 
                 end else begin
-                    dispense_counter = 0;
+                    // --- FIX: Assign to 'next' register ---
+                    dispense_counter_next = 0;
                 end
             end
             
@@ -88,9 +95,6 @@ module DispenseController (
                 led_out = 1;         // LED on for "blink"
                 servo_pos_select = 1; // Push
                 timer_enable = 1;
-                
-                // On the next cycle, we will decrement. Keep current value.
-                dispense_counter = dispense_counter; 
                 
                 if (timer_done) begin
                     next_state = S_REVERT;
@@ -103,10 +107,14 @@ module DispenseController (
                 servo_pos_select = 0; // Revert
                 timer_enable = 1;
                 
-                // Decrement the counter *after* this revert
-                dispense_counter = dispense_counter - 1; 
-
+                // --- THE FIX IS HERE ---
+                // We must wait for the timer to be done before
+                // we decide to change the counter or state.
+                
                 if (timer_done) begin
+                    // --- FIX: Moved decrement line inside if(timer_done) ---
+                    dispense_counter_next = dispense_counter - 1; 
+                
                     // Check the *current* count (before decrement)
                     if (dispense_counter > 1) begin 
                         next_state = S_WAIT; // More to go
@@ -114,6 +122,10 @@ module DispenseController (
                         next_state = S_IDLE; // This was the last one
                     end
                 end
+                // else:
+                //   next_state stays S_REVERT (from default)
+                //   dispense_counter_next stays dispense_counter (from default)
+                // --- END OF FIX ---
             end
             
             S_WAIT: begin
@@ -122,9 +134,6 @@ module DispenseController (
                 servo_pos_select = 0; // Stay at 0
                 timer_enable = 1;
                 
-                // Keep the same count, we're just waiting
-                dispense_counter = dispense_counter; 
-                
                 if (timer_done) begin
                     next_state = S_PUSH; // Go for the next push
                 end
@@ -132,21 +141,18 @@ module DispenseController (
             
             default: begin
                 next_state = S_IDLE;
-                dispense_counter = 0;
+                dispense_counter_next = 0; 
             end
         endcase
     end
     
     // --- Internal Counter Register ---
-    // This 'always' block is separate to correctly model 
-    // the registered (clocked) behavior of the counter.
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n)
             dispense_counter <= 0;
         else
-            // 'dispense_counter' register is updated based on
-            // the combinational logic from the FSM case statement.
-            dispense_counter <= dispense_counter; 
+            // Update the counter from the 'next' register on each clock
+            dispense_counter <= dispense_counter_next; 
     end
 
 endmodule

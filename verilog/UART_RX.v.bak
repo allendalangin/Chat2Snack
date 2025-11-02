@@ -15,7 +15,7 @@ module UART_RX (
     // --- Parameters ---
     parameter CLK_FREQ = 50_000_000;
     // !! IMPORTANT: Set this to match your sender's baud rate !!
-    parameter BAUD_RATE = 9600; 
+    parameter BAUD_RATE = 115200; 
     
     localparam CLOCKS_PER_BIT = CLK_FREQ / BAUD_RATE;
 
