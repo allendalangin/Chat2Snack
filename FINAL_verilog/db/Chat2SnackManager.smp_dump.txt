@@ -1,0 +1,56 @@
+
+State Machine - |Chat2SnackManager|seq_state
+Name seq_state.S_SEQ_PIZZA_WAIT seq_state.S_SEQ_PIZZA_START seq_state.S_SEQ_ICECREAM_WAIT seq_state.S_SEQ_ICECREAM_START seq_state.S_SEQ_SODA_WAIT seq_state.S_SEQ_SODA_START seq_state.S_SEQ_FRIES_WAIT seq_state.S_SEQ_FRIES_START seq_state.S_SEQ_BURGER_WAIT seq_state.S_SEQ_BURGER_START seq_state.S_SEQ_IDLE 
+seq_state.S_SEQ_IDLE 0 0 0 0 0 0 0 0 0 0 0 
+seq_state.S_SEQ_BURGER_START 0 0 0 0 0 0 0 0 0 1 1 
+seq_state.S_SEQ_BURGER_WAIT 0 0 0 0 0 0 0 0 1 0 1 
+seq_state.S_SEQ_FRIES_START 0 0 0 0 0 0 0 1 0 0 1 
+seq_state.S_SEQ_FRIES_WAIT 0 0 0 0 0 0 1 0 0 0 1 
+seq_state.S_SEQ_SODA_START 0 0 0 0 0 1 0 0 0 0 1 
+seq_state.S_SEQ_SODA_WAIT 0 0 0 0 1 0 0 0 0 0 1 
+seq_state.S_SEQ_ICECREAM_START 0 0 0 1 0 0 0 0 0 0 1 
+seq_state.S_SEQ_ICECREAM_WAIT 0 0 1 0 0 0 0 0 0 0 1 
+seq_state.S_SEQ_PIZZA_START 0 1 0 0 0 0 0 0 0 0 1 
+seq_state.S_SEQ_PIZZA_WAIT 1 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |Chat2SnackManager|DispenseController:dc_pizza|state
+Name state.S_WAIT state.S_REVERT state.S_PUSH state.S_IDLE 
+state.S_IDLE 0 0 0 0 
+state.S_PUSH 0 0 1 1 
+state.S_REVERT 0 1 0 1 
+state.S_WAIT 1 0 0 1 
+
+State Machine - |Chat2SnackManager|DispenseController:dc_ice_cream|state
+Name state.S_WAIT state.S_REVERT state.S_PUSH state.S_IDLE 
+state.S_IDLE 0 0 0 0 
+state.S_PUSH 0 0 1 1 
+state.S_REVERT 0 1 0 1 
+state.S_WAIT 1 0 0 1 
+
+State Machine - |Chat2SnackManager|DispenseController:dc_soda|state
+Name state.S_WAIT state.S_REVERT state.S_PUSH state.S_IDLE 
+state.S_IDLE 0 0 0 0 
+state.S_PUSH 0 0 1 1 
+state.S_REVERT 0 1 0 1 
+state.S_WAIT 1 0 0 1 
+
+State Machine - |Chat2SnackManager|DispenseController:dc_fries|state
+Name state.S_WAIT state.S_REVERT state.S_PUSH state.S_IDLE 
+state.S_IDLE 0 0 0 0 
+state.S_PUSH 0 0 1 1 
+state.S_REVERT 0 1 0 1 
+state.S_WAIT 1 0 0 1 
+
+State Machine - |Chat2SnackManager|DispenseController:dc_burger|state
+Name state.S_WAIT state.S_REVERT state.S_PUSH state.S_IDLE 
+state.S_IDLE 0 0 0 0 
+state.S_PUSH 0 0 1 1 
+state.S_REVERT 0 1 0 1 
+state.S_WAIT 1 0 0 1 
+
+State Machine - |Chat2SnackManager|UART_RX:uart_receiver|state
+Name state.S_STOP state.S_DATA state.S_START state.S_IDLE 
+state.S_IDLE 0 0 0 0 
+state.S_START 0 0 1 1 
+state.S_DATA 0 1 0 1 
+state.S_STOP 1 0 0 1 

@@ -1,0 +1,16 @@
+Analysis & Synthesis Status : Successful - Fri Nov  7 11:30:42 2025
+Quartus Prime Version : 24.1std.0 Build 1077 03/04/2025 SC Lite Edition
+Revision Name : Chat2SnackManager
+Top-level Entity Name : Chat2SnackManager
+Family : MAX 10
+Total logic elements : 591
+    Total combinational functions : 549
+    Dedicated logic registers : 340
+Total registers : 340
+Total pins : 29
+Total virtual pins : 0
+Total memory bits : 0
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0
+UFM blocks : 0
+ADC blocks : 0
